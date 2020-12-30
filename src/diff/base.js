@@ -1,7 +1,23 @@
 export default function Diff() {}
 
+// czi: if timed out throw error
+function isTimedOut(timeout, startTimestamp) {
+  if (
+    timeout &&
+    startTimestamp &&
+    Date.now() - startTimestamp >= timeout
+  ) {
+    throw new Error('Diff timed out!')
+  }
+
+  return false;
+}
+
 Diff.prototype = {
   diff(oldString, newString, options = {}) {
+    const timeout = options.timeout || 0;
+    const startTimestamp = options.startTimestamp || Date.now();
+
     let callback = options.callback;
     if (typeof options === 'function') {
       callback = options;
@@ -42,6 +58,7 @@ Diff.prototype = {
     // Main worker method. checks all permutations of a given edit length for acceptance.
     function execEditLength() {
       for (let diagonalPath = -1 * editLength; diagonalPath <= editLength; diagonalPath += 2) {
+        isTimedOut(timeout, startTimestamp);
         let basePath;
         let addPath = bestPath[diagonalPath - 1],
             removePath = bestPath[diagonalPath + 1],
