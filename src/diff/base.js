@@ -7,7 +7,7 @@ function isTimedOut(timeout, startTimestamp) {
     startTimestamp &&
     Date.now() - startTimestamp >= timeout
   ) {
-    throw new Error('Diff timed out!')
+    throw new Error('Diff timed out!');
   }
 
   return false;
