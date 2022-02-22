@@ -46,24 +46,24 @@ module.exports = function(grunt) {
       }
     },
 
-    // mocha_istanbul: {
-    //   coverage: {
-    //     src: 'test/**/*.js'
-    //   }
-    // },
-    // istanbul_check_coverage: {
-    //   'default': {
-    //     options: {
-    //       coverageFolder: 'coverage*', // will check both coverage folders and merge the coverage results
-    //       check: {
-    //         statements: 100,
-    //         functions: 100,
-    //         branches: 100,
-    //         lines: 100
-    //       }
-    //     }
-    //   }
-    // },
+    mocha_istanbul: {
+      coverage: {
+        src: 'test/**/*.js'
+      }
+    },
+    istanbul_check_coverage: {
+      'default': {
+        options: {
+          coverageFolder: 'coverage*', // will check both coverage folders and merge the coverage results
+          check: {
+            statements: 100,
+            functions: 100,
+            branches: 100,
+            lines: 100
+          }
+        }
+      }
+    },
 
     karma: {
       options: {
@@ -119,7 +119,7 @@ module.exports = function(grunt) {
         },
 
         files: ['src/**/*.js', 'test/**/*.js'],
-        tasks: ['build', 'mochaTest']
+        tasks: ['build', 'mochaTest', 'cover']
       }
     }
   });
@@ -127,7 +127,7 @@ module.exports = function(grunt) {
   // Build a new version of the library
   this.registerTask('build', 'Builds a distributable version of the current project', ['eslint', 'babel', 'exec:rollup']);
   this.registerTask('test', ['build', 'mochaTest', 'karma:unit']);
-  // this.registerTask('cover', ['mocha_istanbul:coverage', 'istanbul_check_coverage']);
+  this.registerTask('cover', ['mocha_istanbul:coverage', 'istanbul_check_coverage']);
 
   this.registerTask('release', ['clean', 'test', 'uglify', 'copy:dist']);
 
@@ -140,16 +140,16 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-eslint');
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-mocha-test');
-  // grunt.loadNpmTasks('grunt-mocha-istanbul');
+  grunt.loadNpmTasks('grunt-mocha-istanbul');
   grunt.loadNpmTasks('grunt-exec');
 
   grunt.task.loadTasks('tasks');
 
   grunt.registerTask('travis',
     !process.env.KARMA && process.env.SAUCE_USERNAME
-      ? ['clean', 'build', 'karma:unit', 'karma:sauce']
-      : ['clean', 'build']);
+      ? ['clean', 'build', 'karma:unit', 'karma:sauce', 'cover']
+      : ['clean', 'build', 'cover']);
 
   grunt.registerTask('dev', ['clean', 'watch']);
-  grunt.registerTask('default', ['clean', 'build']);
+  grunt.registerTask('default', ['clean', 'build', 'cover']);
 };
